@@ -6,7 +6,7 @@ import java.time.LocalDate;
 
 @Data
 public class Search {
-    private String codeProject;
-    private String nameProject;
+    private String code;
+    private String name;
     private LocalDate timeStart;
 }

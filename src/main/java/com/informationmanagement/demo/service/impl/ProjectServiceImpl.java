@@ -9,17 +9,13 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 @AllArgsConstructor
 public class ProjectServiceImpl implements IProjectService {
 
     private IProjectRepository projectRepository;
-
-    @Override
-    public List<Project> findAllProject() {
-        return projectRepository.findAll();
-    }
 
     @Override
     public Project save(Project project) {
@@ -33,7 +29,11 @@ public class ProjectServiceImpl implements IProjectService {
 
     @Override
     public List<Project> searchProject(Search search) {
-        return projectRepository.searchProject(search);
+        return projectRepository.searchProject(search.getCode(), search.getName());
     }
 
+    @Override
+    public Optional<Project> findById(Long id) {
+        return projectRepository.findById(id);
+    }
 }

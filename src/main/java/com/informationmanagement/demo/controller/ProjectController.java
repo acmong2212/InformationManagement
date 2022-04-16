@@ -8,46 +8,50 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.time.LocalDate;
-
 @RestController
 @AllArgsConstructor
 @CrossOrigin(origins = "*")
-@RequestMapping("/project")
+@RequestMapping("/projects")
 public class ProjectController {
 
     private IProjectService projectService;
 
-    @GetMapping("/list")
-    public ResponseEntity<?> findAllProject() {
-        return new ResponseEntity<>(projectService.findAllProject(), HttpStatus.OK);
-    }
-
-    @PostMapping("/createProject")
+    @PostMapping
     public ResponseEntity<?> createProject(@RequestBody Project project) {
         projectService.save(project);
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
-    @PutMapping("/updateProject/{id}")
+    @GetMapping("/{id}")
+    public ResponseEntity<?> findById(@PathVariable Long id) {
+        return new ResponseEntity<>(projectService.findById(id), HttpStatus.OK);
+    }
+
+    @PutMapping("/{id}")
     public ResponseEntity<?> updateProject(@PathVariable("id") Long id, @RequestBody Project project) {
         project.setId(id);
         projectService.save(project);
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
-    @DeleteMapping("/deleteProject/{id}")
+    @DeleteMapping("/{id}")
     public ResponseEntity<?> deleteProject(@PathVariable("id") Long id){
         projectService.deleteById(id);
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
-
-    @GetMapping("/search")
-    public ResponseEntity<?> search(@RequestBody Search search) {
-        projectService.searchProject(search);
-        return new ResponseEntity<>(projectService.findAllProject(), HttpStatus.OK);
+    @GetMapping("/s")
+    public ResponseEntity<?> search1(@RequestParam(required = false) String code, String name) {
+        Search s = new Search();
+        s.setCode(code);
+        s.setName(name);
+        return new ResponseEntity<>(projectService.searchProject(s), HttpStatus.OK);
     }
 
-    
+    @GetMapping
+    public ResponseEntity<?> search(@RequestBody Search search) {
+        return new ResponseEntity<>(projectService.searchProject(search), HttpStatus.OK);
+    }
+
+
 }

@@ -13,9 +13,9 @@ public class Project {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private String codeProject;
+    private String code;
 
-    private String nameProject;
+    private String name;
 
     private Long teamSize;
 
