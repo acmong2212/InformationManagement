@@ -5,14 +5,18 @@ import com.informationmanagement.demo.dto.Search;
 import com.informationmanagement.demo.model.Project;
 import com.informationmanagement.demo.service.IProjectService;
 import lombok.AllArgsConstructor;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import javax.transaction.Transactional;
+import java.util.List;
 import java.util.Optional;
 
+@Transactional
 @RestController
 @AllArgsConstructor
 @CrossOrigin(origins = "*")
@@ -46,19 +50,10 @@ public class ProjectController {
     }
 
     @GetMapping
-    public ResponseEntity<?> search(@RequestParam(required = false) String code,
-                                    @RequestParam(required = false) String name) {
-        Search s = new Search();
-        s.setCode(code);
-        s.setName(name);
-        return new ResponseEntity<>(projectService.searchProject(s), HttpStatus.OK);
-    }
-
-    @GetMapping("/s")
-    public ResponseEntity<?> search(@RequestParam(required = false) String code,
-                                    @RequestParam(required = false) String name,
-                                    @RequestParam("page") Optional<Integer> page,
-                                    @RequestParam("size") Optional<Integer> size) {
+    public ResponseEntity<Page<ProjectDTO>> search(@RequestParam(required = false) String code,
+                                       @RequestParam(required = false) String name,
+                                       @RequestParam("page") Optional<Integer> page,
+                                       @RequestParam("size") Optional<Integer> size) {
         int currentPage = page.orElse(1);
         int pageSize = size.orElse(5);
         Pageable pageable = PageRequest.of(currentPage, pageSize);
@@ -67,5 +62,14 @@ public class ProjectController {
         s.setCode(code);
         s.setName(name);
         return new ResponseEntity<>(projectService.searchProject(s, pageable), HttpStatus.OK);
+    }
+
+    @GetMapping("/s")
+    public ResponseEntity<List<ProjectDTO>> search1(@RequestParam(required = false) String code,
+                                       @RequestParam(required = false) String name) {
+        Search s = new Search();
+        s.setCode(code);
+        s.setName(name);
+        return new ResponseEntity<>(projectService.search(s), HttpStatus.OK);
     }
 }

@@ -11,7 +11,7 @@ import java.util.List;
 public interface IProjectService {
     Project save(Project project);
     void deleteById(Long id);
-    List<Project> searchProject(Search search);
-    Page<Project> searchProject(Search search, Pageable pageable);
+    Page<ProjectDTO> searchProject(Search search, Pageable pageable);
     ProjectDTO findById(Long id);
+    List<ProjectDTO> search(Search search);
 }
