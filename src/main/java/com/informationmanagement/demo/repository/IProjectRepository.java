@@ -12,4 +12,6 @@ public interface IProjectRepository extends JpaRepository<Project, Long> {
 
     @Query("select p from Project p where p.code like %:code% and p.name like %:name%")
     Page<Project> searchProject(String code, String name, Pageable pageable);
+
+    boolean existsById(Long id);
 }

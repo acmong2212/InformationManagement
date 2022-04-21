@@ -1,4 +1,4 @@
-package com.informationmanagement.demo.dto;
+package com.informationmanagement.demo.dto.response;
 
 import com.informationmanagement.demo.model.Project;
 import com.informationmanagement.demo.model.ProjectStatus;

@@ -1,4 +1,4 @@
-package com.informationmanagement.demo.dto;
+package com.informationmanagement.demo.dto.request;
 
 import lombok.Data;
 
