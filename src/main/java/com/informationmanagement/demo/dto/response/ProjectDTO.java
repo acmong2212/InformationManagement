@@ -6,6 +6,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.springframework.beans.BeanUtils;
 
+import javax.validation.constraints.NotNull;
 import java.time.LocalDate;
 
 @Data
@@ -14,14 +15,17 @@ public class ProjectDTO {
 
     private Long id;
 
+    @NotNull(message = "Code cannot be empty")
     private String code;
 
+    @NotNull(message = "Name cannot be empty")
     private String name;
 
     private Long teamSize;
 
     private String namePartner;
 
+    @NotNull(message = "Projects take time to start")
     private LocalDate timeStart;
 
     private LocalDate timeFinish;

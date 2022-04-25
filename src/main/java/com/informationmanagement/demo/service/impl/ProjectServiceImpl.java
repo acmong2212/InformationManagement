@@ -29,29 +29,39 @@ public class ProjectServiceImpl implements IProjectService {
     @PersistenceContext
     private EntityManager entityManager;
 
+    //@todo validate dữ liệu đầu vào bên DTO
     @Override
-    public Project save(Project project) {
-        return projectRepository.save(project);
+    public ProjectDTO save(ProjectDTO project) {
+        Project p = new Project(project);
+        Project projectE = projectRepository.save(p);
+        return new ProjectDTO(projectE);
+    }
+
+    //@todo validate dữ liệu đầu vào bên DTO
+    @Override
+    public ProjectDTO update(Long id, ProjectDTO project) {
+        Project p =  projectRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Project", "Project does not exist"));
+        project.setId(id);
+        p.update(project);
+        projectRepository.save(p);
+        return new ProjectDTO(p);
     }
 
     @Override
     public void deleteById(Long id) {
-        Project project = projectRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Project", "Project does not exist"));
-        projectRepository.delete(project);
+        Project project = projectRepository.findByIdAndDeletedIsFalse(id).orElseThrow(() -> new ResourceNotFoundException("Project", "Project does not exist"));
+        project.setDeleted(true);
+        projectRepository.save(project);
     }
 
     @Override
     public ProjectDTO findById(Long id) {
-        return projectRepository.findById(id).map(ProjectDTO::new).orElseThrow(() -> new ResourceNotFoundException("Project", "Project does not exist"));
+        return projectRepository.findByIdAndDeletedIsFalse(id).map(ProjectDTO::new).orElseThrow(() -> new ResourceNotFoundException("Project", "Project does not exist"));
 }
 
+    //@todo sửa phân trang, count số lượng phần tử tìm được
     @Override
-    public Boolean existsById(Long id) {
-        return projectRepository.existsById(id);
-    }
-
-    @Override
-    public Page<ProjectDTO> search(Search search, Pageable pageable) {
+    public Page<ProjectDTO> search(Search search, int page1, int size, Pageable pageable) {
         StringBuilder hql = new StringBuilder();
         Map<String, Object> params = new HashMap<>();
 
@@ -66,14 +76,15 @@ public class ProjectServiceImpl implements IProjectService {
             hql.append("and p.name like :name");
             params.put("name", "%" + search.getName() + "%");
         }
-        Query query = entityManager.createQuery(hql.toString());
+        Query query = entityManager.createQuery(hql.toString()).setMaxResults(size).setFirstResult((page1 - 1) * size);
         for (String key : params.keySet()) {
             query.setParameter(key, params.get(key));
         }
 
         List<ProjectDTO> list = query.getResultList();
+//        long total = (long) entityManager.createQuery("select count(*) from ...").getSingleResult();
         Page<ProjectDTO> page = new PageImpl<>(list, pageable, list.size());
-        PageRequest.of(1,5);
+        PageRequest.of(1,3);
         return page;
     }
 }
