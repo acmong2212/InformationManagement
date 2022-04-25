@@ -59,7 +59,6 @@ public class ProjectServiceImpl implements IProjectService {
         return projectRepository.findByIdAndDeletedIsFalse(id).map(ProjectDTO::new).orElseThrow(() -> new ResourceNotFoundException("Project", "Project does not exist"));
 }
 
-    //@todo sửa phân trang, count số lượng phần tử tìm được
     @Override
     public Page<ProjectDTO> search(Search search, int page1, int size, Pageable pageable) {
         StringBuilder hql = new StringBuilder();
@@ -68,6 +67,7 @@ public class ProjectServiceImpl implements IProjectService {
         hql.append("select p ");
         hql.append("from Project p ");
         hql.append("where 1=1 ");
+        hql.append("and deleted = 0 ");
         if (search.getCode() != null) {
             hql.append("and p.code like :code ");
             params.put("code", "%" + search.getCode() + "%");
@@ -84,7 +84,30 @@ public class ProjectServiceImpl implements IProjectService {
         List<ProjectDTO> list = query.getResultList();
 //        long total = (long) entityManager.createQuery("select count(*) from ...").getSingleResult();
         Page<ProjectDTO> page = new PageImpl<>(list, pageable, list.size());
-        PageRequest.of(1,3);
         return page;
+    }
+
+    @Override
+    public int count(Search search) {
+        StringBuilder hql = new StringBuilder();
+        Map<String, Object> params = new HashMap<>();
+
+        hql.append("select count(*) ");
+        hql.append("from Project p ");
+        hql.append("where 1=1 ");
+        hql.append("and deleted = 0 ");
+        if (search.getCode() != null) {
+            hql.append("and p.code like :code ");
+            params.put("code", "%" + search.getCode() + "%");
+        }
+        if (search.getName() != null) {
+            hql.append("and p.name like :name");
+            params.put("name", "%" + search.getName() + "%");
+        }
+        Query query = entityManager.createQuery(hql.toString());
+        for (String key : params.keySet()) {
+            query.setParameter(key, params.get(key));
+        }
+        return (query.getSingleResult().hashCode());
     }
 }

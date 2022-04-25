@@ -46,7 +46,6 @@ public class ProjectController {
         return new ResponseEntity<>(new Message(1, "Deleted"), HttpStatus.OK);
     }
 
-    //@todo hiển thị tổng số bản ghi
     @GetMapping
     public ResponseEntity<?> search(@RequestParam(required = false) String code,
                                                     @RequestParam(required = false) String name,
@@ -59,6 +58,6 @@ public class ProjectController {
 
         s.setCode(code);
         s.setName(name);
-        return new ResponseEntity<>(new SuccessResponsePage(1, projectService.search(s,page, size , pageable)), HttpStatus.OK);
+        return new ResponseEntity<>(new SuccessResponsePage(1, projectService.count(s), projectService.search(s,page, size , pageable)), HttpStatus.OK);
     }
 }

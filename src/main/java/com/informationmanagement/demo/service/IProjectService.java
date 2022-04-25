@@ -11,4 +11,5 @@ public interface IProjectService {
     void deleteById(Long id);
     ProjectDTO findById(Long id);
     Page<ProjectDTO> search(Search search, int page, int size, Pageable pageable);
+    int count(Search search);
 }

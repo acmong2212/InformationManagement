@@ -22,12 +22,12 @@ public class ExceptionController {
     @ExceptionHandler(SQLIntegrityConstraintViolationException.class)
     public ResponseEntity<?> nullPointer1(Exception e) {
         e.printStackTrace();
-        return new ResponseEntity<>(new FailedResponse(0, "404", e.getMessage()), HttpStatus.NOT_FOUND);
+        return new ResponseEntity<>(new FailedResponse(0, "999", e.getMessage()), HttpStatus.NOT_FOUND);
     }
 
     @ExceptionHandler(ResourceNotFoundException.class)
     public ResponseEntity<?> idNotFound(Exception e) {
         e.printStackTrace();
-        return new ResponseEntity<>(new FailedResponse(0, "404", "Project does not exist"), HttpStatus.NOT_FOUND);
+        return new ResponseEntity<>(new FailedResponse(0, "808", e.getMessage()), HttpStatus.NOT_FOUND);
     }
 }
