@@ -6,6 +6,7 @@ import org.springframework.beans.BeanUtils;
 
 import javax.persistence.*;
 import javax.validation.constraints.Min;
+import javax.validation.constraints.NotNull;
 import java.time.LocalDate;
 
 @Entity
@@ -18,9 +19,11 @@ public class Project {
     private Long id;
 
 //    @Min(value = 2, message = "Code phai lon hon 2 ki tu")
+    @NotNull(message = "Code cannot be empty")
     @Column(name = "code")
     private String code;
 
+    @NotNull(message = "Name cannot be empty")
     @Column(name = "name")
     private String name;
 
@@ -30,6 +33,7 @@ public class Project {
     @Column(name = "name_partner")
     private String namePartner;
 
+    @NotNull(message = "Projects take time to start")
     @Column(name = "time_start")
     private LocalDate timeStart;
 

@@ -15,4 +15,6 @@ public class SuccessResponsePage {
         this.totalRecord = totalRecord;
         this.data = search;
     }
+
+
 }

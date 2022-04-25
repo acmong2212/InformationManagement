@@ -13,13 +13,13 @@ import java.sql.SQLIntegrityConstraintViolationException;
 @ControllerAdvice
 public class ExceptionController {
 
-    @ExceptionHandler(ConstraintViolationException.class)
+    @ExceptionHandler(SQLIntegrityConstraintViolationException.class)
     public ResponseEntity<?> nullPointer(Exception e) {
         e.printStackTrace();
-        return new ResponseEntity<>(e.getLocalizedMessage(), HttpStatus.NOT_FOUND);
+        return new ResponseEntity<>(new FailedResponse(0, "999", e.getMessage()), HttpStatus.NOT_FOUND);
     }
 
-    @ExceptionHandler(SQLIntegrityConstraintViolationException.class)
+    @ExceptionHandler(ConstraintViolationException.class)
     public ResponseEntity<?> nullPointer1(Exception e) {
         e.printStackTrace();
         return new ResponseEntity<>(new FailedResponse(0, "999", e.getMessage()), HttpStatus.NOT_FOUND);

@@ -5,16 +5,13 @@ import com.informationmanagement.demo.dto.response.ProjectDTO;
 import com.informationmanagement.demo.dto.request.Search;
 import com.informationmanagement.demo.dto.response.SuccessResponse;
 import com.informationmanagement.demo.dto.response.SuccessResponsePage;
-import com.informationmanagement.demo.service.IProjectService;
+import com.informationmanagement.demo.service.ProjectService;
 import lombok.AllArgsConstructor;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import javax.transaction.Transactional;
-import java.util.Optional;
 
 @Transactional
 @RestController
@@ -23,7 +20,7 @@ import java.util.Optional;
 @RequestMapping("/projects")
 public class ProjectController {
 
-    private IProjectService projectService;
+    private ProjectService projectService;
 
     @PostMapping
     public ResponseEntity<?> createProject(@RequestBody ProjectDTO projectRequest) {
@@ -48,16 +45,12 @@ public class ProjectController {
 
     @GetMapping
     public ResponseEntity<?> search(@RequestParam(required = false) String code,
-                                                    @RequestParam(required = false) String name,
-                                                    @RequestParam("page") int page,
-                                                    @RequestParam("size") int size, Pageable pageable) {
-//        int currentPage = page.orElse(1);
-//        int pageSize = size.orElse(5);
-//        Pageable pageable = PageRequest.of(currentPage, pageSize);
+                                    @RequestParam(required = false) String name,
+                                    @RequestParam("page") int page,
+                                    @RequestParam("size") int size) {
         Search s = new Search();
-
         s.setCode(code);
         s.setName(name);
-        return new ResponseEntity<>(new SuccessResponsePage(1, projectService.count(s), projectService.search(s,page, size , pageable)), HttpStatus.OK);
+        return new ResponseEntity<>(new SuccessResponsePage(1, projectService.count(s), projectService.search(s, page, size)), HttpStatus.OK);
     }
 }

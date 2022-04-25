@@ -3,8 +3,8 @@ package com.informationmanagement.demo.service.impl;
 import com.informationmanagement.demo.dto.response.ProjectDTO;
 import com.informationmanagement.demo.dto.request.Search;
 import com.informationmanagement.demo.model.Project;
-import com.informationmanagement.demo.repository.IProjectRepository;
-import com.informationmanagement.demo.service.IProjectService;
+import com.informationmanagement.demo.repository.ProjectRepository;
+import com.informationmanagement.demo.service.ProjectService;
 import lombok.AllArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
@@ -22,9 +22,9 @@ import java.util.Map;
 
 @Service
 @AllArgsConstructor
-public class ProjectServiceImpl implements IProjectService {
+public class ProjectServiceImpl implements ProjectService {
 
-    private IProjectRepository projectRepository;
+    private ProjectRepository projectRepository;
 
     @PersistenceContext
     private EntityManager entityManager;
@@ -60,9 +60,10 @@ public class ProjectServiceImpl implements IProjectService {
 }
 
     @Override
-    public Page<ProjectDTO> search(Search search, int page1, int size, Pageable pageable) {
+    public Page<ProjectDTO> search(Search search, int page1, int size) {
         StringBuilder hql = new StringBuilder();
         Map<String, Object> params = new HashMap<>();
+        Pageable pageable = PageRequest.of(page1 - 1, size);
 
         hql.append("select p ");
         hql.append("from Project p ");
@@ -76,13 +77,12 @@ public class ProjectServiceImpl implements IProjectService {
             hql.append("and p.name like :name");
             params.put("name", "%" + search.getName() + "%");
         }
-        Query query = entityManager.createQuery(hql.toString()).setMaxResults(size).setFirstResult((page1 - 1) * size);
+        Query query = entityManager.createQuery(hql.toString()).setMaxResults(size).setFirstResult((int)pageable.getOffset());
         for (String key : params.keySet()) {
             query.setParameter(key, params.get(key));
         }
 
         List<ProjectDTO> list = query.getResultList();
-//        long total = (long) entityManager.createQuery("select count(*) from ...").getSingleResult();
         Page<ProjectDTO> page = new PageImpl<>(list, pageable, list.size());
         return page;
     }
