@@ -53,4 +53,11 @@ public class ProjectController {
         s.setName(name);
         return new ResponseEntity<>(new SuccessResponsePage(1, projectService.count(s), projectService.search(s, page, size)), HttpStatus.OK);
     }
+
+    @GetMapping("/searchCriteria")
+    public ResponseEntity<?> searchCriteria(@RequestParam(required = false) String code,
+                                            @RequestParam(required = false) String name,
+                                            @RequestParam(required = false) Long teamSize) {
+        return ResponseEntity.ok(projectService.findByCodeAndNameAndTeamSizeCriteria(code, name, teamSize));
+    }
 }

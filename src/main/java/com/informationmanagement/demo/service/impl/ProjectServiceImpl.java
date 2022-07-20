@@ -3,6 +3,7 @@ package com.informationmanagement.demo.service.impl;
 import com.informationmanagement.demo.dto.response.ProjectDTO;
 import com.informationmanagement.demo.dto.request.Search;
 import com.informationmanagement.demo.model.Project;
+import com.informationmanagement.demo.model.Project_;
 import com.informationmanagement.demo.repository.ProjectRepository;
 import com.informationmanagement.demo.service.ProjectService;
 import lombok.AllArgsConstructor;
@@ -16,9 +17,14 @@ import org.springframework.stereotype.Service;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
+import javax.persistence.criteria.CriteriaBuilder;
+import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.Predicate;
+import javax.persistence.criteria.Root;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 @Service
 @AllArgsConstructor
@@ -59,6 +65,7 @@ public class ProjectServiceImpl implements ProjectService {
         return projectRepository.findByIdAndDeletedIsFalse(id).map(ProjectDTO::new).orElseThrow(() -> new ResourceNotFoundException("Project", "Project does not exist"));
 }
 
+    // Query động dùng string builder
     @Override
     public Page<ProjectDTO> search(Search search, int page1, int size) {
         StringBuilder hql = new StringBuilder();
@@ -109,5 +116,22 @@ public class ProjectServiceImpl implements ProjectService {
             query.setParameter(key, params.get(key));
         }
         return (query.getSingleResult().hashCode());
+    }
+
+    // Query động dùng Criteria
+    @Override
+    public List<ProjectDTO> findByCodeAndNameAndTeamSizeCriteria(String code, String name, Long teamSize) {
+        CriteriaBuilder builder = entityManager.getCriteriaBuilder();
+        CriteriaQuery<Project> query = builder.createQuery(Project.class);
+        Root<Project> root = query.from(Project.class);
+
+        Predicate hasCode = builder.like(root.get(Project_.CODE), code);
+        Predicate hasName = builder.like(root.get(Project_.NAME), name);
+        Predicate hasTeamSize = builder.equal(root.get(Project_.TEAM_SIZE), teamSize);
+
+        Predicate condition = builder.or(hasCode, hasName, hasTeamSize);
+        query.select(root).where(condition);
+        List<Project> projectList = entityManager.createQuery(query).getResultList();
+        return projectList.stream().map(ProjectDTO::new).collect(Collectors.toList());
     }
 }
